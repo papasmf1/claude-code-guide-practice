@@ -1,0 +1,16 @@
+{
+  "hooks": {
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 -c \"\nimport sys, json\ndata = json.load(sys.stdin)\ncmd = data.get('tool_input', {}).get('command', '')\npatterns = ['rm -rf', 'rm -fr', 'drop table', 'git push --force', 'git push -f', 'git push --force-with-lease']\nfor pat in patterns:\n    if pat.lower() in cmd.lower():\n        print(json.dumps({'continue': False, 'stopReason': f'[BLOCKED] 위험한 명령어 감지: \\\"{pat}\\\" — 실행이 차단되었습니다.'}))\n        sys.exit(2)\n\"",
+            "statusMessage": "위험한 명령어 검사 중..."
+          }
+        ]
+      }
+    ]
+  }
+}
